@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tankvolume',
             name='created_at',
-            field=models.DateTimeField(default=timezone.now()),
+            field=models.DateTimeField(default=timezone.now),
         ),
     ]

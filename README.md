@@ -3,36 +3,37 @@
 ## Local Development
 
 Setup Python virtual environment:
-
+```bash
 pyenv virtualenv 3.13.1 dashfuel_takehome
 echo 'dashfuel_takehome' > .python-version
-
+```
 
 Installing `mysqlclient` on Apple Silicon
-
-
+```bash
 brew install mysql-client pkg-config
 export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
- 
+```
 
 Install dependencies:
-
+```bash
 poetry install
-
+```
 
 Start MySQL database:
 
+```bash
 docker compose up db
-
+```
 
 Apply database migrations:
-
+```bash
 ./manage.py migrate
-
+```
 
 Start the Django server:
-
+```bash
 ./manage.py runserver
+```
 
 
 ## API Endpoints
