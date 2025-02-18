@@ -68,16 +68,17 @@ class WeeklyTankSales(models.Model):
 
 @receiver(post_save, sender=TankVolume)
 def update_weekly_sales(sender, instance, created, **kwargs):
-    if not created:
-        current_date = instance.created_at.date()
-        week_start = current_date - timedelta(days=current_date.weekday())
-        week_end = week_start + timedelta(days=6)
-        weekly_tank_sales, _ = WeeklyTankSales.objects.get_or_create(
-            tank=instance.tank,
-            week_start=week_start,
-            week_end=week_end
-        )
+    current_date = instance.created_at.date()
+    week_start = current_date - timedelta(days=current_date.weekday())
+    week_end = week_start + timedelta(days=6)
 
+    weekly_tank_sales, _ = WeeklyTankSales.objects.get_or_create(
+        tank=instance.tank,
+        week_start=week_start,
+        week_end=week_end
+    )
+
+    if not created:
         week_volumes = TankVolume.objects.filter(
             tank=instance.tank,
             created_at__date__range=[
@@ -123,7 +124,6 @@ def update_weekly_sales(sender, instance, created, **kwargs):
 
         weekly_tank_sales.total_sales = total_sales
         weekly_tank_sales.total_sales_count = total_sales_count
-        weekly_tank_sales.save()
     else:
         previous_day = instance.created_at.date() - timedelta(days=1)
         previous_volume = TankVolume.objects.filter(
@@ -142,16 +142,6 @@ def update_weekly_sales(sender, instance, created, **kwargs):
         if volume_difference <= 0:
             volume_difference = 0
 
-        current_date = instance.created_at.date()
-        week_start = current_date - timedelta(days=current_date.weekday())
-        week_end = week_start + timedelta(days=6)
-
-        weekly_tank_sales, _ = WeeklyTankSales.objects.get_or_create(
-            tank=instance.tank,
-            week_start=week_start,
-            week_end=week_end
-        )
-
         day_field = weekly_tank_sales.day_field_mapping[current_date.weekday()]
         current_day_sales = getattr(weekly_tank_sales, day_field)
         setattr(weekly_tank_sales, day_field, current_day_sales + volume_difference)
@@ -160,4 +150,4 @@ def update_weekly_sales(sender, instance, created, **kwargs):
             weekly_tank_sales.total_sales_count += 1
 
         weekly_tank_sales.total_sales += volume_difference
-        weekly_tank_sales.save()
+    weekly_tank_sales.save()
